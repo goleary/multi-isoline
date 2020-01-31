@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { addLocation } from "../redux/actions";
 
 import {
   Button,
@@ -10,7 +12,7 @@ import {
 } from "@material-ui/core";
 
 import PlacesAutocomplete from "./PlacesAutocomplete";
-export default function AddLocationDialog({ dialogOpen, setPlace }) {
+const AddLocationDialog = ({ dialogOpen, addLocation }) => {
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(dialogOpen), [dialogOpen]);
 
@@ -29,8 +31,8 @@ export default function AddLocationDialog({ dialogOpen, setPlace }) {
         </DialogContentText>
         <PlacesAutocomplete
           setPlace={place => {
-            setPlace(place);
-            handleClose();
+            addLocation(place);
+            setOpen(false);
           }}
         />
       </DialogContent>
@@ -44,4 +46,8 @@ export default function AddLocationDialog({ dialogOpen, setPlace }) {
       </DialogActions>
     </Dialog>
   );
-}
+};
+
+const mapDispatchToProps = { addLocation };
+
+export default connect(null, mapDispatchToProps)(AddLocationDialog);

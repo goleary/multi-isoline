@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+
+import { addIsoline } from "../redux/actions";
+
 import {
   List,
   ListItem,
@@ -23,11 +27,10 @@ const useStyles = makeStyles(theme => ({
     margin: "10px"
   }
 }));
-export default function Sidebar() {
+const Sidebar = ({ locations, isolines, addIsoline }) => {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [locations, setLocations] = useState([]);
-  const addLocation = location => setLocations([...locations, location]);
+  const [isolineField, setIsolineField] = useState(60);
   return (
     <List className={classes.root}>
       <ListSubheader>Locations</ListSubheader>
@@ -40,12 +43,37 @@ export default function Sidebar() {
         </ListItemIcon>
         <ListItemText primary="Add One" />
       </ListItem>
-      <AddLocationDialog dialogOpen={dialogOpen} setPlace={addLocation} />
+      <AddLocationDialog dialogOpen={dialogOpen} />
       <ListSubheader>Isolines</ListSubheader>
-      <ListItem>60 min</ListItem>
+      {isolines.map(time => (
+        <ListItem>{time + " min"}</ListItem>
+      ))}
       <ListItem>
-        <TextField label="test" variant="outlined" type="number" />
+        <TextField
+          onChange={event => setIsolineField(event.target.value)}
+          onKeyPress={ev => {
+            console.log(`Pressed keyCode ${ev.key}`);
+            if (ev.key === "Enter") {
+              addIsoline(isolineField);
+              // Do code here
+              ev.preventDefault();
+            }
+          }}
+          label="test"
+          variant="outlined"
+          type="number"
+          value={isolineField}
+        />
       </ListItem>
     </List>
   );
-}
+};
+
+const mapStateToProps = (state /*, ownProps*/) => {
+  return {
+    locations: state.locations,
+    isolines: state.isolines
+  };
+};
+
+export default connect(mapStateToProps, { addIsoline })(Sidebar);
