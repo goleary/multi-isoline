@@ -14,7 +14,7 @@ function App() {
   const type = "time";
   const traffic = false;
   const [zoom, setZoom] = useState(12);
-/*
+  /*
   useEffect(() => {
     //could convert this to async function
     const updateIsoline = () => {
@@ -38,6 +38,7 @@ function App() {
 */
   return (
     <div className="App">
+      <Sidebar />
       <MapContainer
         color={color}
         isoline={shape}
