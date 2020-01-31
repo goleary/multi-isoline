@@ -33,19 +33,20 @@ export default ({ ...props }) => {
   let event = null;
 
   const [loaded, setLoaded] = useState(false);
-
-  if (typeof window !== "undefined" && !loaded.current) {
-    if (!document.querySelector("#google-maps")) {
-      loadScript(
-        "https://maps.googleapis.com/maps/api/js?key=AIzaSyA26CwIAVe2RnPbj6C5qEQCac7I6cgsrNU&libraries=places",
-        document.querySelector("head"),
-        "google-maps",
-        () => {
-          setLoaded(true);
-        }
-      );
+  useEffect(() => {
+    if (typeof window !== "undefined" && !loaded.current) {
+      if (!document.querySelector("#google-maps")) {
+        loadScript(
+          "https://maps.googleapis.com/maps/api/js?key=AIzaSyA26CwIAVe2RnPbj6C5qEQCac7I6cgsrNU&libraries=places",
+          document.querySelector("head"),
+          "google-maps",
+          () => {
+            setLoaded(true);
+          }
+        );
+      } else setLoaded(true);
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (!loaded) return;

@@ -1,52 +1,77 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { connect } from "react-redux";
 import { Map, TileLayer, Marker, Polygon } from "react-leaflet";
-import { hereTileUrl } from "../services/here";
+import { hereIsolineUrl, hereTileUrl } from "../services/here";
 
-class MapContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.marker = React.createRef();
-    this.map = React.createRef();
-  }
-
+const MapContainer = ({
+  center,
+  color,
+  locations,
+  isolines,
+  handleMapMove,
+  zoom
+}) => {
+  const map = useRef();
+  const [shape, setShape] = useState([]);
   handleMapMove = () => {
-    const zoom = this.map.current.viewport.zoom;
-    this.props.handleMapMove(zoom);
+    const zoom = map.current.viewport.zoom;
+    handleMapMove(zoom);
   };
+  const defaultOptions = { mode: "car", traffic: false, type: "time" };
 
-  handleMarkerDrag = () => {
-    const coordinates = this.marker.current.leafletElement.getLatLng();
-    const center = [coordinates.lat, coordinates.lng];
-    this.props.handleMarkerDrag(center);
-  };
+  ///should probably useMemo to avoid recomputing old isolines
+  useEffect(() => {
+    const fetchIsolines = () => {
+      fetch(
+        hereIsolineUrl({
+          ...defaultOptions,
+          place: locations[0],
+          range: isolines[0]
+        })
+      )
+        .then(res => res.json())
+        .then(res => {
+          if (res.response.isoline[0].component.length > 0) {
+            const temp = res.response.isoline[0].component[0].shape.map(x => [
+              x.split(",")[0],
+              x.split(",")[1]
+            ]);
+            setShape(temp);
+          } else {
+            setShape([]);
+          }
+        });
+    };
+    if (locations[0] && isolines[0]) fetchIsolines();
+  }, [locations, isolines]);
 
-  render() {
-    return (
-      <div className="map">
-        <Map
-          center={this.props.center}
-          zoom={this.props.zoom}
-          zoomControl={false}
-          attributionControl={false}
-          onMoveend={this.handleMapMove}
-          ref={this.map}
-        >
-          <TileLayer url={hereTileUrl("reduced.night")} />
+  return (
+    <div className="map">
+      <Map
+        center={center}
+        zoom={zoom}
+        zoomControl={false}
+        attributionControl={false}
+        onMoveend={handleMapMove}
+        ref={map}
+      >
+        <TileLayer url={hereTileUrl("reduced.night")} />
+        {locations.map((l, index) => (
           <Marker
-            position={this.props.center}
-            draggable={true}
-            onDragEnd={this.handleMarkerDrag}
-            ref={this.marker}
+            key={index}
+            position={[l.geometry.location.lat(), l.geometry.location.lng()]}
           />
-          <Polygon
-            fillOpacity={0.1}
-            weight={2}
-            positions={this.props.isoline}
-            color={this.props.color}
-          />
-        </Map>
-      </div>
-    );
-  }
-}
-export default MapContainer;
+        ))}
+        <Polygon fillOpacity={0.1} weight={2} positions={shape} color={color} />
+      </Map>
+    </div>
+  );
+};
+const mapStateToProps = (state /*, ownProps*/) => {
+  return {
+    locations: state.locations,
+    isolines: state.isolines
+  };
+};
+
+export default connect(mapStateToProps)(MapContainer);

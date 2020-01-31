@@ -1,7 +1,7 @@
 import union from "lodash/union";
 import { ADD_ISOLINE } from "../actionTypes";
 
-const initialState = [60];
+const initialState = [10];
 
 export default function(state = initialState, action) {
   switch (action.type) {

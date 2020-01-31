@@ -34,8 +34,8 @@ const Sidebar = ({ locations, isolines, addIsoline }) => {
   return (
     <List className={classes.root}>
       <ListSubheader>Locations</ListSubheader>
-      {locations.map(l => (
-        <ListItem>{l.name}</ListItem>
+      {locations.map((l, index) => (
+        <ListItem key={index}>{l.name}</ListItem>
       ))}
       <ListItem button onClick={() => setDialogOpen(true)}>
         <ListItemIcon>
@@ -43,10 +43,13 @@ const Sidebar = ({ locations, isolines, addIsoline }) => {
         </ListItemIcon>
         <ListItemText primary="Add One" />
       </ListItem>
-      <AddLocationDialog dialogOpen={dialogOpen} />
+      <AddLocationDialog
+        dialogOpen={dialogOpen}
+        done={() => setDialogOpen(false)}
+      />
       <ListSubheader>Isolines</ListSubheader>
-      {isolines.map(time => (
-        <ListItem>{time + " min"}</ListItem>
+      {isolines.map((time, index) => (
+        <ListItem key={index}>{time + " min"}</ListItem>
       ))}
       <ListItem>
         <TextField

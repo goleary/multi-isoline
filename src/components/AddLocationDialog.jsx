@@ -12,36 +12,24 @@ import {
 } from "@material-ui/core";
 
 import PlacesAutocomplete from "./PlacesAutocomplete";
-const AddLocationDialog = ({ dialogOpen, addLocation }) => {
+const AddLocationDialog = ({ dialogOpen, addLocation, done }) => {
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(dialogOpen), [dialogOpen]);
 
-  const handleClose = () => setOpen(false);
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+    <Dialog open={open} onClose={done} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Add a location</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          To subscribe to this website, please enter your email address here. We
-          will send updates occasionally.
-        </DialogContentText>
         <PlacesAutocomplete
           setPlace={place => {
             addLocation(place);
-            setOpen(false);
+            done();
           }}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={done} color="primary">
           Cancel
-        </Button>
-        <Button onClick={handleClose} color="primary">
-          Subscribe
         </Button>
       </DialogActions>
     </Dialog>
