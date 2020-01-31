@@ -16,14 +16,6 @@ const MapContainer = ({
   zoom
 }) => {
   const map = useRef();
-  const [shape, setShape] = useState([]);
-  const [polygons, setPolygons] = useState([]);
-  /*
-  handleMapMove = () => {
-    const zoom = map.current.viewport.zoom;
-    handleMapMove(zoom);
-  };
-  */
   const defaultOptions = { mode: "car", traffic: false, type: "time" };
 
   ///should probably useMemo to avoid recomputing old isolines
@@ -60,7 +52,7 @@ const MapContainer = ({
         zoom={zoom}
         zoomControl={false}
         attributionControl={false}
-        onMoveend={handleMapMove}
+        onMoveEnd={() => handleMapMove(map.current.viewport.zoom)}
         ref={map}
       >
         <TileLayer url={hereTileUrl("reduced.night")} />

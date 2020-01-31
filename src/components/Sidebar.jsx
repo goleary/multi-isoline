@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     left: 0,
     background: "white",
-    margin: "10px"
+    margin: "10px",
+    zIndex: "500"
   }
 }));
 const Sidebar = ({ locations, ranges, addRange }) => {
