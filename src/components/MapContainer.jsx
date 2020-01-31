@@ -3,47 +3,55 @@ import { connect } from "react-redux";
 import { Map, TileLayer, Marker, Polygon } from "react-leaflet";
 import { hereIsolineUrl, hereTileUrl } from "../services/here";
 
+import { addIsoline } from "../redux/actions";
+
 const MapContainer = ({
+  addIsoline,
   center,
   color,
   locations,
+  ranges,
   isolines,
   handleMapMove,
   zoom
 }) => {
   const map = useRef();
   const [shape, setShape] = useState([]);
+  const [polygons, setPolygons] = useState([]);
+  /*
   handleMapMove = () => {
     const zoom = map.current.viewport.zoom;
     handleMapMove(zoom);
   };
+  */
   const defaultOptions = { mode: "car", traffic: false, type: "time" };
 
   ///should probably useMemo to avoid recomputing old isolines
   useEffect(() => {
-    const fetchIsolines = () => {
+    const fetchIsoline = (place, range) =>
       fetch(
         hereIsolineUrl({
           ...defaultOptions,
-          place: locations[0],
-          range: isolines[0]
+          place,
+          range
         })
       )
         .then(res => res.json())
         .then(res => {
           if (res.response.isoline[0].component.length > 0) {
-            const temp = res.response.isoline[0].component[0].shape.map(x => [
+            const shape = res.response.isoline[0].component[0].shape.map(x => [
               x.split(",")[0],
               x.split(",")[1]
             ]);
-            setShape(temp);
-          } else {
-            setShape([]);
+            if (shape) addIsoline(shape);
           }
         });
-    };
-    if (locations[0] && isolines[0]) fetchIsolines();
-  }, [locations, isolines]);
+    for (const l of locations) {
+      for (const r of ranges) {
+        fetchIsoline(l, r);
+      }
+    }
+  }, [locations, ranges]);
 
   return (
     <div className="map">
@@ -62,7 +70,15 @@ const MapContainer = ({
             position={[l.geometry.location.lat(), l.geometry.location.lng()]}
           />
         ))}
-        <Polygon fillOpacity={0.1} weight={2} positions={shape} color={color} />
+        {isolines.map((p, index) => (
+          <Polygon
+            key={index}
+            fillOpacity={0.1}
+            weight={2}
+            positions={p}
+            color={color}
+          />
+        ))}
       </Map>
     </div>
   );
@@ -70,8 +86,9 @@ const MapContainer = ({
 const mapStateToProps = (state /*, ownProps*/) => {
   return {
     locations: state.locations,
+    ranges: state.ranges,
     isolines: state.isolines
   };
 };
 
-export default connect(mapStateToProps)(MapContainer);
+export default connect(mapStateToProps, { addIsoline })(MapContainer);

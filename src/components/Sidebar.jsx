@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 
-import { addIsoline } from "../redux/actions";
+import { addRange } from "../redux/actions";
 
 import {
   List,
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     margin: "10px"
   }
 }));
-const Sidebar = ({ locations, isolines, addIsoline }) => {
+const Sidebar = ({ locations, ranges, addRange }) => {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isolineField, setIsolineField] = useState(60);
@@ -48,7 +48,7 @@ const Sidebar = ({ locations, isolines, addIsoline }) => {
         done={() => setDialogOpen(false)}
       />
       <ListSubheader>Isolines</ListSubheader>
-      {isolines.map((time, index) => (
+      {ranges.map((time, index) => (
         <ListItem key={index}>{time + " min"}</ListItem>
       ))}
       <ListItem>
@@ -57,7 +57,7 @@ const Sidebar = ({ locations, isolines, addIsoline }) => {
           onKeyPress={ev => {
             console.log(`Pressed keyCode ${ev.key}`);
             if (ev.key === "Enter") {
-              addIsoline(isolineField);
+              addRange(isolineField);
               // Do code here
               ev.preventDefault();
             }
@@ -75,8 +75,8 @@ const Sidebar = ({ locations, isolines, addIsoline }) => {
 const mapStateToProps = (state /*, ownProps*/) => {
   return {
     locations: state.locations,
-    isolines: state.isolines
+    ranges: state.ranges
   };
 };
 
-export default connect(mapStateToProps, { addIsoline })(Sidebar);
+export default connect(mapStateToProps, { addRange })(Sidebar);

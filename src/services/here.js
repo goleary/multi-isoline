@@ -4,6 +4,7 @@ const hereCredentials = {
 };
 
 const hereIsolineUrl = ({ mode, traffic, place, range, type }) => {
+  debugger;
   return `https://isoline.route.api.here.com/routing/7.2/calculateisoline.json
 ?app_id=${hereCredentials.id}
 &app_code=${hereCredentials.code}
