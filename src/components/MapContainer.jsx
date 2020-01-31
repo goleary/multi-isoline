@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Map, TileLayer, Marker, Polygon } from "react-leaflet";
+
 import { hereIsolineUrl, hereTileUrl } from "../services/here";
 
 import { addIsoline } from "../redux/actions";
@@ -15,7 +16,7 @@ const MapContainer = ({
   handleMapMove,
   zoom
 }) => {
-  const map = useRef();
+  const mapRef = useRef();
   const defaultOptions = { mode: "car", traffic: false, type: "time" };
 
   ///should probably useMemo to avoid recomputing old isolines
@@ -52,8 +53,8 @@ const MapContainer = ({
         zoom={zoom}
         zoomControl={false}
         attributionControl={false}
-        onMoveEnd={() => handleMapMove(map.current.viewport.zoom)}
-        ref={map}
+        onMoveEnd={() => handleMapMove(mapRef.current.viewport.zoom)}
+        ref={mapRef}
       >
         <TileLayer url={hereTileUrl("reduced.night")} />
         {locations.map((l, index) => (

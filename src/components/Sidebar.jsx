@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 
-import { addRange } from "../redux/actions";
+import { addRange, removeRange, removeLocation } from "../redux/actions";
 
 import {
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -14,6 +15,7 @@ import {
 } from "@material-ui/core";
 
 import AddIcon from "@material-ui/icons/Add";
+import ClearIcon from "@material-ui/icons/Clear";
 
 import AddLocationDialog from "./AddLocationDialog";
 
@@ -28,7 +30,13 @@ const useStyles = makeStyles(theme => ({
     zIndex: "500"
   }
 }));
-const Sidebar = ({ locations, ranges, addRange }) => {
+const Sidebar = ({
+  locations,
+  ranges,
+  addRange,
+  removeLocation,
+  removeRange
+}) => {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isolineField, setIsolineField] = useState(60);
@@ -36,7 +44,12 @@ const Sidebar = ({ locations, ranges, addRange }) => {
     <List className={classes.root}>
       <ListSubheader>Locations</ListSubheader>
       {locations.map((l, index) => (
-        <ListItem key={index}>{l.name}</ListItem>
+        <ListItem key={index}>
+          <ListItemText primary={l.name} />
+          <IconButton onClick={() => removeLocation(l)}>
+            <ClearIcon />
+          </IconButton>
+        </ListItem>
       ))}
       <ListItem button onClick={() => setDialogOpen(true)}>
         <ListItemIcon>
@@ -50,7 +63,12 @@ const Sidebar = ({ locations, ranges, addRange }) => {
       />
       <ListSubheader>Isolines</ListSubheader>
       {ranges.map((time, index) => (
-        <ListItem key={index}>{time + " min"}</ListItem>
+        <ListItem key={index}>
+          <ListItemText primary={time + " min"} />
+          <IconButton onClick={() => removeRange(time)} aria-label="delete">
+            <ClearIcon />
+          </IconButton>
+        </ListItem>
       ))}
       <ListItem>
         <TextField
@@ -80,4 +98,8 @@ const mapStateToProps = (state /*, ownProps*/) => {
   };
 };
 
-export default connect(mapStateToProps, { addRange })(Sidebar);
+export default connect(mapStateToProps, {
+  addRange,
+  removeRange,
+  removeLocation
+})(Sidebar);
